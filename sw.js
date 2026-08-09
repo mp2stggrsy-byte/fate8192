@@ -1,4 +1,4 @@
-const CACHE='fate8192-v13';
+const CACHE='fate8192-v14';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest',
 './assets/icons/icon-192.png','./assets/icons/icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
