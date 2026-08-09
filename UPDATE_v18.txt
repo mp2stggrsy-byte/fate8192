@@ -1,0 +1,1 @@
+v18: stage03 and stage04 backgrounds regenerated from scratch so both red and green shrine gates are present at matching size; full package includes prior BGM changes.

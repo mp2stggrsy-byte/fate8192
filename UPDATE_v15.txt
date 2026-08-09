@@ -1,0 +1,1 @@
+v15: gates baked larger into background; CSS visible gate graphics removed; stage01-04 ambience softened.

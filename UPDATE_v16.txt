@@ -1,0 +1,6 @@
+v16
+- Replaced stage01-stage13 backgrounds with newly generated full-scene artwork, not copy-pasted composites.
+- Red and green gate shrines are integrated naturally into each background.
+- No pasted rectangles or transparent-edge cutouts.
+- Early ambient BGM changes from v15 retained.
+- Cache version bumped to v16.

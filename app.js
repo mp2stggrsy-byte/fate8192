@@ -15,7 +15,7 @@ function playAmbient(){
  if(soundOn){a.volume=.28;a.play().catch(()=>{})}
 }
 function render(){
- $('bg').style.backgroundImage=`url("./assets/backgrounds/stage${String(stage).padStart(2,'0')}.jpg?v=14")`;
+ $('bg').style.backgroundImage=`url("./assets/backgrounds/stage${String(stage).padStart(2,'0')}.jpg?v=18")`;
  $('stageName').textContent=STAGES[stage-1][0];
  $('prob').textContent='1 / '+(2**stage).toLocaleString();
  $('pct').textContent=pct();

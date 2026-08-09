@@ -1,0 +1,1 @@
+v17: all stage backgrounds adjusted so red/green gates appear consistently sized across stage01-stage13; v16 ambience retained; cache bumped.
