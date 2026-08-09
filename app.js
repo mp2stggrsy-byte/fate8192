@@ -15,7 +15,7 @@ function playAmbient(){
  if(soundOn){a.volume=.28;a.play().catch(()=>{})}
 }
 function render(){
- $('bg').style.backgroundImage=`url("./assets/backgrounds/stage${String(stage).padStart(2,'0')}.jpg")`;
+ $('bg').style.backgroundImage=`url("./assets/backgrounds/stage${String(stage).padStart(2,'0')}.jpg?v=5")`;
  $('stageName').textContent=STAGES[stage-1][0];
  $('prob').textContent='1 / '+(2**stage).toLocaleString();
  $('pct').textContent=pct();
@@ -25,15 +25,15 @@ function render(){
  playAmbient();
 }
 function lock(v){locked=v;$('green').disabled=v;$('red').disabled=v}
-function resetVisual(){$('runner').className='runner';$('green').classList.remove('ok','ng');$('red').classList.remove('ok','ng')}
+function resetVisual(){$('bg').classList.remove('pick-left','pick-right');$('green').classList.remove('ok','ng');$('red').classList.remove('ok','ng')}
 function toast(b,s,ms=800){$('toastB').textContent=b;$('toastS').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),ms)}
 function autoReset(){stage=1;resetVisual();render();lock(false)}
 function choose(side){
  if(locked)return; lock(true);resetVisual();
- const answer=rand(), runner=$('runner');runner.classList.add(side==='g'?'goL':'goR');
+ const answer=rand(); $('bg').classList.add(side==='g'?'pick-left':'pick-right');
  setTimeout(()=>{
   const chosen=side==='g'?$('green'):$('red'),correct=answer==='g'?$('green'):$('red');
-  stats.history.push(answer);stats.history=stats.history.slice(-13);
+  stats.history.push(answer);stats.history=stats.history.slice(-13);save();
   if(side===answer){
    chosen.classList.add('ok');stats.reach[stage-1]++;stats.best=Math.max(stats.best,stage);save();
    if(navigator.vibrate)navigator.vibrate(24);toast('SUCCESS',STAGES[stage-1][0]+' 突破');
