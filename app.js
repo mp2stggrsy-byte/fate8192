@@ -33,8 +33,9 @@ function choose(side){
  const answer=rand(), runner=$('runner');runner.classList.add(side==='g'?'goL':'goR');
  setTimeout(()=>{
   const chosen=side==='g'?$('green'):$('red'),correct=answer==='g'?$('green'):$('red');
+  stats.history.push(answer);stats.history=stats.history.slice(-13);
   if(side===answer){
-   chosen.classList.add('ok');stats.history.push(answer);stats.history=stats.history.slice(-13);stats.reach[stage-1]++;stats.best=Math.max(stats.best,stage);save();
+   chosen.classList.add('ok');stats.reach[stage-1]++;stats.best=Math.max(stats.best,stage);save();
    if(navigator.vibrate)navigator.vibrate(24);toast('SUCCESS',STAGES[stage-1][0]+' 突破');
    if(stage===MAX){
     stats.attempts++;stats.clears++;stats.best=13;save();$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on');
