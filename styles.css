@@ -40,7 +40,7 @@ nav button{
 /* Opaque panels intentionally cover the old panel artwork baked into the cinematic source. */
 .panel{
  position:absolute;z-index:26;top:calc(env(safe-area-inset-top) + 82px);
- background:linear-gradient(180deg,#090c0ff2,#050709f0);
+ background:linear-gradient(180deg,#090c0f,#050709);
  border:1px solid rgba(229,188,99,.80);
  box-shadow:0 12px 32px #0009;
 }
@@ -95,7 +95,7 @@ nav button{
  transform:translateX(-50%);
  width:min(73%,420px);text-align:center;padding:11px 14px;
  border:1px solid rgba(225,181,91,.70);border-radius:13px;
- background:rgba(4,6,8,.89);box-shadow:0 10px 32px #0008;
+ background:rgba(4,6,8,.96);box-shadow:0 10px 32px #0008;
  font:700 16px serif;
 }
 .caption small{display:block;font:11px sans-serif;margin-top:4px;color:#ddd5c8}
@@ -144,3 +144,9 @@ body.transitioning header,
 body.transitioning .caption{opacity:.28;transition:opacity .35s ease}
 .panel,.scroll,header,.caption{transition:opacity .35s ease}
 body.transitioning .bg{filter:brightness(.82) saturate(.92)}
+
+/* v7: remove accidental blurred block appearance */
+.panel, .scroll, .caption, nav button {
+  filter: none !important;
+  -webkit-filter: none !important;
+}

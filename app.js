@@ -15,7 +15,7 @@ function playAmbient(){
  if(soundOn){a.volume=.28;a.play().catch(()=>{})}
 }
 function render(){
- $('bg').style.backgroundImage=`url("./assets/backgrounds/stage${String(stage).padStart(2,'0')}.jpg?v=6")`;
+ $('bg').style.backgroundImage=`url("./assets/backgrounds/stage${String(stage).padStart(2,'0')}.jpg?v=7")`;
  $('stageName').textContent=STAGES[stage-1][0];
  $('prob').textContent='1 / '+(2**stage).toLocaleString();
  $('pct').textContent=pct();
@@ -65,7 +65,6 @@ function choose(side){
        render();
        setTimeout(()=>{
          document.body.classList.remove('transitioning');
-         toast('SUCCESS',STAGES[stage-2][0]+' を突破',650);
          if(navigator.vibrate)navigator.vibrate(24);
          lock(false);
        },520);
@@ -78,7 +77,6 @@ function choose(side){
      render();
      setTimeout(()=>{
        document.body.classList.remove('transitioning');
-       toast('FAILED','朝の参道へ戻りました',800);
        if(navigator.vibrate)navigator.vibrate([70,45,120]);
        lock(false);
      },560);
