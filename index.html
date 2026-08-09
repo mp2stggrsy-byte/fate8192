@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#090b12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FATE 8192">
+<title>FATE 8192</title>
+<style>
+:root{
+  --red:#e34a4a;
+  --green:#2dbe73;
+  --ink:#f5f1e8;
+  --muted:#a9acb7;
+  --gold:#e8c77d;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;background:#05060a;color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+button{font:inherit}
+#game{
+  position:relative;width:100%;height:100svh;overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(77,82,117,.32),transparent 35%),
+    linear-gradient(#0b0e17 0%,#0b0c10 54%,#111018 100%);
+  touch-action:manipulation;
+}
+#game:before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+  background:
+    linear-gradient(90deg,transparent 49.6%,rgba(255,255,255,.025) 50%,transparent 50.4%),
+    repeating-linear-gradient(0deg,transparent 0 31px,rgba(255,255,255,.018) 32px);
+}
+.top{
+  position:absolute;z-index:10;top:calc(env(safe-area-inset-top) + 9px);left:14px;right:14px;
+  display:flex;align-items:flex-start;justify-content:space-between;
+}
+.logo{font-size:12px;font-weight:800;letter-spacing:.24em;color:#ddd6c7}
+.stageBox{text-align:center}
+.stageSmall{font-size:9px;letter-spacing:.18em;color:#b7b0a3}
+.stageBig{font-size:29px;font-weight:900;line-height:1}
+.odds{font-size:11px;margin-top:4px;color:var(--gold);font-variant-numeric:tabular-nums}
+.icon{
+  border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:white;
+  width:39px;height:39px;border-radius:50%;font-weight:700;
+}
+.world{
+  position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 66px);
+  bottom:calc(env(safe-area-inset-bottom) + 88px);
+}
+.ceiling{
+  position:absolute;left:8%;right:8%;top:3%;height:20%;opacity:.55;
+  background:linear-gradient(145deg,transparent 46%,rgba(255,255,255,.08) 47% 49%,transparent 50%),
+             linear-gradient(215deg,transparent 46%,rgba(255,255,255,.08) 47% 49%,transparent 50%);
+}
+.floor{
+  position:absolute;left:-22%;right:-22%;bottom:-6%;height:64%;
+  background:
+    linear-gradient(90deg,transparent 49.7%,rgba(232,199,125,.11) 50%,transparent 50.3%),
+    repeating-linear-gradient(90deg,transparent 0 15%,rgba(255,255,255,.035) 15.2% 15.5%,transparent 15.7% 30%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.045) 0 1px,transparent 1px 54px);
+  transform:perspective(320px) rotateX(56deg);
+  transform-origin:bottom;
+  filter:drop-shadow(0 -20px 40px rgba(0,0,0,.3));
+}
+.gate{
+  position:absolute;top:18%;width:31%;height:42%;border:0;border-radius:18px 18px 4px 4px;
+  overflow:hidden;color:white;box-shadow:0 20px 50px rgba(0,0,0,.42);
+  transition:filter .2s,transform .2s,opacity .2s;
+}
+.gate:disabled{pointer-events:none}
+.gate:before{
+  content:"";position:absolute;inset:9px;border:2px solid rgba(255,255,255,.20);
+  border-bottom:0;border-radius:12px 12px 0 0;
+}
+.gate:after{
+  content:"";position:absolute;left:50%;bottom:0;width:2px;height:100%;
+  background:rgba(0,0,0,.2)
+}
+.gate.red{left:7%;background:linear-gradient(180deg,#fb6a64,#b52130)}
+.gate.green{right:7%;background:linear-gradient(180deg,#49d98c,#147846)}
+.gateLabel{
+  position:absolute;left:0;right:0;top:42%;transform:translateY(-50%);
+  text-align:center;font-size:clamp(17px,5vw,24px);font-weight:900;letter-spacing:.14em;
+  text-shadow:0 2px 10px rgba(0,0,0,.45)
+}
+.gateSub{display:block;margin-top:5px;font-size:9px;font-weight:700;letter-spacing:.15em;opacity:.85}
+.gate.correct{animation:correctGlow .65s ease both}
+.gate.wrong{animation:wrongGate .45s ease both}
+@keyframes correctGlow{
+  0%{filter:brightness(1)}
+  35%{filter:brightness(2);box-shadow:0 0 50px currentColor}
+  100%{filter:brightness(1.3)}
+}
+@keyframes wrongGate{
+  0%{transform:translateX(0)}
+  22%{transform:translateX(-8px)}
+  44%{transform:translateX(7px)}
+  66%{transform:translateX(-4px)}
+  100%{transform:translateX(0);filter:grayscale(.55) brightness(.55)}
+}
+.scroll{
+  position:absolute;z-index:4;left:50%;top:7%;transform:translateX(-50%);
+  width:20%;min-width:76px;max-width:96px;height:51%;
+  background:linear-gradient(90deg,#d4c29c,#f1e2bd 18%,#e9d7ad 80%,#c7b48b);
+  color:#282218;border-radius:3px;box-shadow:0 12px 35px rgba(0,0,0,.42);
+  display:flex;flex-direction:column;align-items:center;
+}
+.scroll:before,.scroll:after{
+  content:"";position:absolute;left:-7px;right:-7px;height:12px;border-radius:8px;
+  background:linear-gradient(#5d4630,#2f241c,#6b5136);
+}
+.scroll:before{top:-7px}.scroll:after{bottom:-7px}
+.scrollTitle{
+  margin-top:15px;font-size:8px;letter-spacing:.14em;font-weight:900;
+  writing-mode:vertical-rl;position:absolute;right:6px;color:#5e503e
+}
+.history{
+  width:58%;padding:12px 0 10px;display:grid;grid-template-columns:1fr 1fr;
+  grid-auto-rows:18px;gap:4px;align-content:start;justify-items:center;
+}
+.hdot{
+  width:15px;height:15px;border-radius:50%;border:1px solid rgba(0,0,0,.18);
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.35),0 1px 3px rgba(0,0,0,.2);
+}
+.hdot.red{background:var(--red)}.hdot.green{background:var(--green)}
+.emptyMark{
+  color:#928269;font-size:20px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  opacity:.5
+}
+.playerWrap{
+  position:absolute;z-index:8;left:50%;bottom:8%;width:54px;height:90px;
+  transform:translateX(-50%);transition:left .52s cubic-bezier(.22,.8,.28,1),bottom .52s cubic-bezier(.22,.8,.28,1),transform .52s;
+}
+.playerWrap.toLeft{left:22%;bottom:37%;transform:translateX(-50%) scale(.58)}
+.playerWrap.toRight{left:78%;bottom:37%;transform:translateX(-50%) scale(.58)}
+.player{
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:32px;height:63px;
+  animation:idle 1.4s ease-in-out infinite;
+}
+.head{
+  position:absolute;top:0;left:8px;width:17px;height:17px;border-radius:50%;
+  background:#e7d4c1;box-shadow:0 0 0 3px #18191e
+}
+.body{
+  position:absolute;top:18px;left:6px;width:21px;height:30px;border-radius:8px 8px 5px 5px;
+  background:linear-gradient(#d6d9df,#8f98a9)
+}
+.leg{position:absolute;top:44px;width:8px;height:20px;background:#545b69;border-radius:4px}
+.leg.l{left:7px;transform:rotate(4deg)}.leg.r{right:7px;transform:rotate(-4deg)}
+.arm{position:absolute;top:22px;width:6px;height:25px;background:#adb4c0;border-radius:4px}
+.arm.l{left:1px;transform:rotate(8deg)}.arm.r{right:1px;transform:rotate(-8deg)}
+.shadow{
+  position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);
+  width:50px;height:10px;border-radius:50%;background:rgba(0,0,0,.42);filter:blur(2px)
+}
+@keyframes idle{50%{transform:translateX(-50%) translateY(-2px)}}
+.playerWrap.running .player{animation:run .16s linear infinite alternate}
+@keyframes run{
+  from{transform:translateX(-50%) rotate(-3deg) translateY(0)}
+  to{transform:translateX(-50%) rotate(3deg) translateY(-3px)}
+}
+.instruction{
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);z-index:9;
+  text-align:center;width:90%;pointer-events:none;
+}
+.instruction b{font-size:14px;letter-spacing:.04em}
+.instruction span{display:block;font-size:10px;margin-top:4px;color:var(--muted)}
+.controls{
+  position:absolute;z-index:11;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 13px);
+  height:66px;display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.choose{
+  border:1px solid rgba(255,255,255,.15);border-radius:18px;color:white;
+  font-weight:900;font-size:16px;letter-spacing:.08em;box-shadow:0 10px 30px rgba(0,0,0,.27);
+}
+.choose.red{background:linear-gradient(#c94444,#8d252d)}
+.choose.green{background:linear-gradient(#2ba866,#176c45)}
+.choose:active{transform:scale(.985)}
+.choose:disabled{opacity:.45}
+.banner{
+  position:absolute;z-index:30;left:50%;top:54%;transform:translate(-50%,-50%) scale(.86);
+  min-width:70%;max-width:88%;padding:14px 18px;border-radius:14px;text-align:center;
+  background:rgba(5,6,10,.88);border:1px solid rgba(255,255,255,.18);
+  opacity:0;pointer-events:none;transition:.18s;
+}
+.banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.banner .big{font-size:26px;font-weight:1000;letter-spacing:.07em}
+.banner .small{font-size:11px;color:#c4c5cb;margin-top:5px}
+.overlay{
+  position:absolute;z-index:50;inset:0;background:rgba(2,3,6,.83);backdrop-filter:blur(12px);
+  display:none;align-items:center;justify-content:center;padding:22px;
+}
+.overlay.show{display:flex}
+.card{
+  width:min(410px,100%);padding:27px 22px 22px;border-radius:24px;text-align:center;
+  background:linear-gradient(180deg,#171923,#0b0c11);border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 25px 80px rgba(0,0,0,.55)
+}
+.resultKicker{font-size:10px;letter-spacing:.25em;color:var(--gold)}
+.resultTitle{font-size:34px;font-weight:1000;margin:9px 0 6px}
+.resultText{font-size:13px;line-height:1.7;color:#bfc1c9;margin:0 auto 18px}
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:15px 0;
+}
+.stat{padding:10px 5px;border-radius:12px;background:rgba(255,255,255,.055)}
+.stat b{display:block;font-size:18px}.stat span{font-size:8px;color:#9ca0aa;letter-spacing:.08em}
+.restart{
+  width:100%;border:0;border-radius:14px;padding:14px;background:#eee9dc;color:#111219;
+  font-weight:900;font-size:15px
+}
+.flash{animation:screenFlash .42s ease}
+@keyframes screenFlash{40%{filter:brightness(1.55)}}
+@media(max-height:700px){
+  .world{top:58px;bottom:77px}.gate{top:12%;height:42%}.scroll{top:3%;height:52%}
+  .playerWrap{bottom:5%}.instruction{display:none}
+}
+</style>
+</head>
+<body>
+<div id="game">
+  <div class="top">
+    <div class="logo">FATE 8192</div>
+    <div class="stageBox">
+      <div class="stageSmall">STAGE</div>
+      <div class="stageBig" id="stageText">01 / 13</div>
+      <div class="odds" id="oddsText">現在 1 / 2</div>
+    </div>
+    <button class="icon" id="soundBtn" aria-label="サウンド">♪</button>
+  </div>
+
+  <div class="world">
+    <div class="ceiling"></div>
+    <div class="floor"></div>
+
+    <button class="gate red" id="redGate" aria-label="赤を選ぶ">
+      <div class="gateLabel">RED<span class="gateSub">赤の門</span></div>
+    </button>
+    <button class="gate green" id="greenGate" aria-label="緑を選ぶ">
+      <div class="gateLabel">GREEN<span class="gateSub">緑の門</span></div>
+    </button>
+
+    <div class="scroll">
+      <div class="scrollTitle">突破記録</div>
+      <div class="history" id="history"></div>
+      <div class="emptyMark" id="emptyMark">—</div>
+    </div>
+
+    <div class="playerWrap" id="playerWrap">
+      <div class="shadow"></div>
+      <div class="player">
+        <div class="head"></div><div class="body"></div>
+        <div class="arm l"></div><div class="arm r"></div>
+        <div class="leg l"></div><div class="leg r"></div>
+      </div>
+    </div>
+
+    <div class="instruction" id="instruction">
+      <b>赤か緑、運命の門を選べ</b>
+      <span>門または下のボタンをタップ</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="choose red" id="redBtn">← RED</button>
+    <button class="choose green" id="greenBtn">GREEN →</button>
+  </div>
+
+  <div class="banner" id="banner">
+    <div class="big" id="bannerBig">SUCCESS</div>
+    <div class="small" id="bannerSmall"></div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="card">
+      <div class="resultKicker" id="resultKicker">FATE ENDED</div>
+      <div class="resultTitle" id="resultTitle">GAME OVER</div>
+      <div class="resultText" id="resultText"></div>
+      <div class="stats">
+        <div class="stat"><b id="attempts">0</b><span>ATTEMPTS</span></div>
+        <div class="stat"><b id="best">0</b><span>BEST</span></div>
+        <div class="stat"><b id="clears">0</b><span>CLEARS</span></div>
+      </div>
+      <button class="restart" id="restart">もう一度挑戦</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+  const MAX=13;
+  const game=document.getElementById('game');
+  const player=document.getElementById('playerWrap');
+  const redGate=document.getElementById('redGate');
+  const greenGate=document.getElementById('greenGate');
+  const redBtn=document.getElementById('redBtn');
+  const greenBtn=document.getElementById('greenBtn');
+  const historyEl=document.getElementById('history');
+  const emptyMark=document.getElementById('emptyMark');
+  const stageText=document.getElementById('stageText');
+  const oddsText=document.getElementById('oddsText');
+  const banner=document.getElementById('banner');
+  const bannerBig=document.getElementById('bannerBig');
+  const bannerSmall=document.getElementById('bannerSmall');
+  const overlay=document.getElementById('overlay');
+  const attemptsEl=document.getElementById('attempts');
+  const bestEl=document.getElementById('best');
+  const clearsEl=document.getElementById('clears');
+  const resultKicker=document.getElementById('resultKicker');
+  const resultTitle=document.getElementById('resultTitle');
+  const resultText=document.getElementById('resultText');
+  const restart=document.getElementById('restart');
+  const soundBtn=document.getElementById('soundBtn');
+
+  let stage=1, history=[], locked=false, sound=true;
+  const mem={};
+  const store={
+    get(k){try{return localStorage.getItem(k)}catch(e){return mem[k]??null}},
+    set(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=String(v)}}
+  };
+  let stats={attempts:0,best:0,clears:0};
+  try{stats={...stats,...JSON.parse(store.get('f8192_stats')||'{}')}}catch(e){}
+  sound=store.get('f8192_sound')!=='off';
+
+  function randSide(){
+    try{
+      const a=new Uint32Array(1);crypto.getRandomValues(a);
+      return (a[0]&1) ? 'green':'red';
+    }catch(e){return Math.random()<.5?'red':'green'}
+  }
+  function vibrate(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+  function tone(freq,dur=.08,type='sine',gain=.035){
+    if(!sound)return;
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext,c=new AC();
+      const o=c.createOscillator(),g=c.createGain();
+      o.type=type;o.frequency.value=freq;g.gain.value=gain;o.connect(g);g.connect(c.destination);
+      o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+dur);o.stop(c.currentTime+dur);
+    }catch(e){}
+  }
+  function save(){store.set('f8192_stats',JSON.stringify(stats))}
+  function setLocked(v){
+    locked=v;[redGate,greenGate,redBtn,greenBtn].forEach(x=>x.disabled=v)
+  }
+  function render(){
+    stageText.textContent=String(stage).padStart(2,'0')+' / 13';
+    oddsText.textContent='現在 1 / '+(2**stage).toLocaleString();
+    historyEl.innerHTML='';
+    history.forEach(c=>{
+      const d=document.createElement('div');d.className='hdot '+c;
+      d.title=c==='red'?'赤':'緑';historyEl.appendChild(d);
+    });
+    emptyMark.style.display=history.length?'none':'block';
+    attemptsEl.textContent=stats.attempts;
+    bestEl.textContent=stats.best;
+    clearsEl.textContent=stats.clears;
+    soundBtn.textContent=sound?'♪':'×';
+  }
+  function showBanner(big,small,ms=700){
+    bannerBig.textContent=big;bannerSmall.textContent=small;
+    banner.classList.add('show');setTimeout(()=>banner.classList.remove('show'),ms);
+  }
+  function resetVisual(){
+    player.className='playerWrap';
+    redGate.classList.remove('correct','wrong');
+    greenGate.classList.remove('correct','wrong');
+  }
+  function choose(side){
+    if(locked)return;
+    setLocked(true);
+    resetVisual();
+    const answer=randSide();
+    player.classList.add('running',side==='red'?'toLeft':'toRight');
+    tone(250,.07,'square',.018);
+
+    setTimeout(()=>{
+      player.classList.remove('running');
+      const chosen=side==='red'?redGate:greenGate;
+      const correct=answer==='red'?redGate:greenGate;
+
+      if(side===answer){
+        chosen.classList.add('correct');
+        history.push(answer);
+        stats.best=Math.max(stats.best,history.length);
+        save();render();
+        game.classList.remove('flash');void game.offsetWidth;game.classList.add('flash');
+        vibrate(24);tone(660,.09);setTimeout(()=>tone(880,.12),90);
+
+        if(stage===MAX){
+          stats.attempts++;stats.clears++;stats.best=13;save();render();
+          setTimeout(()=>finish(true),650);
+        }else{
+          showBanner('SUCCESS',`${stage}連続突破　正解：${answer==='red'?'赤':'緑'}`);
+          stage++;
+          setTimeout(()=>{
+            resetVisual();render();setLocked(false);
+          },760);
+        }
+      }else{
+        chosen.classList.add('wrong');correct.classList.add('correct');
+        stats.attempts++;stats.best=Math.max(stats.best,history.length);save();render();
+        vibrate([70,50,120]);tone(120,.3,'sawtooth',.05);
+        showBanner('FAILED',`正解は ${answer==='red'?'RED / 赤':'GREEN / 緑'}`,850);
+        setTimeout(()=>finish(false,answer),900);
+      }
+    },540);
+  }
+  function finish(clear,answer){
+    if(clear){
+      resultKicker.textContent='IMPOSSIBLE FATE';
+      resultTitle.textContent='1 / 8192 CLEAR';
+      resultText.innerHTML='13回連続で正しい門を選びました。<br><b>運命を完全突破。</b>';
+      vibrate([60,40,60,40,180]);
+      tone(523,.12);setTimeout(()=>tone(659,.12),120);setTimeout(()=>tone(784,.3),240);
+    }else{
+      resultKicker.textContent='FATE ENDED';
+      resultTitle.textContent='GAME OVER';
+      resultText.innerHTML=`STAGE ${String(stage).padStart(2,'0')} で失敗。<br>${history.length}回連続突破／正解は <b>${answer==='red'?'赤':'緑'}</b> でした。`;
+    }
+    render();overlay.classList.add('show');
+  }
+  function newGame(){
+    stage=1;history=[];overlay.classList.remove('show');resetVisual();render();setLocked(false);
+  }
+
+  redGate.addEventListener('click',()=>choose('red'));
+  greenGate.addEventListener('click',()=>choose('green'));
+  redBtn.addEventListener('click',()=>choose('red'));
+  greenBtn.addEventListener('click',()=>choose('green'));
+  restart.addEventListener('click',newGame);
+  soundBtn.addEventListener('click',()=>{
+    sound=!sound;store.set('f8192_sound',sound?'on':'off');render();
+    if(sound)tone(700,.06);
+  });
+  render();
+})();
+</script>
+</body>
+</html>
