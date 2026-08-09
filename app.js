@@ -15,13 +15,13 @@ function playAmbient(){
  if(soundOn){a.volume=.28;a.play().catch(()=>{})}
 }
 function render(){
- $('bg').style.backgroundImage=`url("./assets/backgrounds/stage${String(stage).padStart(2,'0')}.jpg?v=5")`;
+ $('bg').style.backgroundImage=`url("./assets/backgrounds/stage${String(stage).padStart(2,'0')}.jpg?v=6")`;
  $('stageName').textContent=STAGES[stage-1][0];
  $('prob').textContent='1 / '+(2**stage).toLocaleString();
  $('pct').textContent=pct();
  $('att').textContent=stats.attempts;$('best').textContent=stats.best;$('clear').textContent=stats.clears;
  $('sound').textContent=soundOn?'♪':'×';
- const h=$('history');h.innerHTML='';stats.history.slice(-13).forEach(v=>{let d=document.createElement('i');d.className='dot '+v;h.appendChild(d)});
+ const h=$('history');h.innerHTML='';stats.history.slice(-13).reverse().forEach(v=>{let d=document.createElement('i');d.className='dot '+v;h.appendChild(d)});
  playAmbient();
 }
 function lock(v){locked=v;$('green').disabled=v;$('red').disabled=v}
@@ -29,23 +29,61 @@ function resetVisual(){$('bg').classList.remove('pick-left','pick-right');$('gre
 function toast(b,s,ms=800){$('toastB').textContent=b;$('toastS').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),ms)}
 function autoReset(){stage=1;resetVisual();render();lock(false)}
 function choose(side){
- if(locked)return; lock(true);resetVisual();
- const answer=rand(); $('bg').classList.add(side==='g'?'pick-left':'pick-right');
+ if(locked)return;
+ lock(true);resetVisual();
+ const answer=rand();
+
+ $('bg').classList.add(side==='g'?'pick-left':'pick-right');
+ document.body.classList.add('transitioning');
+
  setTimeout(()=>{
-  const chosen=side==='g'?$('green'):$('red'),correct=answer==='g'?$('green'):$('red');
-  stats.history.push(answer);stats.history=stats.history.slice(-13);save();
-  if(side===answer){
-   chosen.classList.add('ok');stats.reach[stage-1]++;stats.best=Math.max(stats.best,stage);save();
-   if(navigator.vibrate)navigator.vibrate(24);toast('SUCCESS',STAGES[stage-1][0]+' 突破');
-   if(stage===MAX){
-    stats.attempts++;stats.clears++;stats.best=13;save();$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on');
-    setTimeout(()=>{toast('1 / 8192 CLEAR','本殿到達。朝の参道へ戻ります',1400);setTimeout(autoReset,1500)},650);
-   }else{stage++;setTimeout(()=>{resetVisual();render();lock(false)},780)}
-  }else{
-   chosen.classList.add('ng');correct.classList.add('ok');stats.attempts++;save();if(navigator.vibrate)navigator.vibrate([70,45,120]);
-   toast('FAILED','正解は'+(answer==='g'?'緑':'赤')+'。1 / 2へ戻ります',1050);setTimeout(autoReset,1200);
-  }
- },560);
+   stats.history.push(answer);
+   stats.history=stats.history.slice(-13);
+
+   if(side===answer){
+     stats.reach[stage-1]++;
+     stats.best=Math.max(stats.best,stage);
+
+     if(stage===MAX){
+       stats.attempts++;
+       stats.clears++;
+       stats.best=MAX;
+       save();
+       $('bg').classList.remove('pick-left','pick-right');
+       render();
+       setTimeout(()=>{
+         document.body.classList.remove('transitioning');
+         $('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on');
+         toast('1 / 8192 CLEAR','本殿到達。朝の参道へ戻ります',1300);
+         if(navigator.vibrate)navigator.vibrate([60,40,60,40,180]);
+         setTimeout(autoReset,1450);
+       },520);
+     }else{
+       stage++;
+       save();
+       $('bg').classList.remove('pick-left','pick-right');
+       render();
+       setTimeout(()=>{
+         document.body.classList.remove('transitioning');
+         toast('SUCCESS',STAGES[stage-2][0]+' を突破',650);
+         if(navigator.vibrate)navigator.vibrate(24);
+         lock(false);
+       },520);
+     }
+   }else{
+     stats.attempts++;
+     save();
+     stage=1;
+     $('bg').classList.remove('pick-left','pick-right');
+     render();
+     setTimeout(()=>{
+       document.body.classList.remove('transitioning');
+       toast('FAILED','朝の参道へ戻りました',800);
+       if(navigator.vibrate)navigator.vibrate([70,45,120]);
+       lock(false);
+     },560);
+   }
+ },900);
 }
 function openStats(){
  $('ambient').pause();$('game').classList.remove('active');$('statsView').classList.add('active');
