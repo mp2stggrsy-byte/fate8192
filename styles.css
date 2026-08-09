@@ -1,0 +1,152 @@
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030507;color:#f5efe2;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+button{font:inherit;color:inherit}
+.view{position:fixed;inset:0;display:none}
+.view.active{display:block}
+#game{overflow:hidden;background:#030507}
+
+.bg{
+ position:absolute;inset:0;
+ background-size:cover;background-position:center center;background-repeat:no-repeat;
+ transition:background-image .65s ease,transform .90s cubic-bezier(.18,.82,.24,1),filter .55s ease;
+ will-change:transform;
+}
+.bg.pick-left{transform:scale(1.16) translate(8.5%,3%)}
+.bg.pick-right{transform:scale(1.16) translate(-8.5%,3%)}
+.cinema{
+ position:absolute;inset:0;pointer-events:none;
+ background:
+   linear-gradient(rgba(0,0,0,.33),transparent 15%,transparent 76%,rgba(0,0,0,.48)),
+   radial-gradient(circle at 50% 48%,transparent 48%,rgba(0,0,0,.24) 100%);
+}
+
+header{
+ position:absolute;z-index:30;top:0;left:0;right:0;
+ padding:calc(env(safe-area-inset-top) + 13px) 17px 8px;
+ display:flex;justify-content:space-between;align-items:flex-start;
+}
+h1{font:700 20px Georgia,serif;letter-spacing:.12em;margin:0;color:#f0c876;text-shadow:0 2px 10px #000}
+header small{font-size:9px;color:#e4d7bd;letter-spacing:.06em;text-shadow:0 1px 5px #000}
+nav{display:flex;gap:11px}
+nav button{
+ width:47px;height:47px;border-radius:50%;
+ border:1px solid rgba(231,190,105,.82);
+ background:rgba(4,6,8,.86);
+ box-shadow:0 4px 16px #0008;
+ font-size:20px;
+}
+
+/* Opaque panels intentionally cover the old panel artwork baked into the cinematic source. */
+.panel{
+ position:absolute;z-index:26;top:calc(env(safe-area-inset-top) + 82px);
+ background:linear-gradient(180deg,#090c0f,#050709);
+ border:1px solid rgba(229,188,99,.80);
+ box-shadow:0 12px 32px #0009;
+}
+.prob{left:17px;width:151px;padding:13px 10px;border-radius:15px;text-align:center}
+.prob span{display:block;font-size:10px;color:#e8e0d4}
+.prob strong{display:block;font:900 32px Georgia,serif;color:#f0ca79;line-height:1.15;margin:5px 0 3px}
+.prob em{font-style:normal;font-size:10px;color:#dfc48e}
+.mini{right:17px;width:139px;padding:11px 13px;border-radius:15px}
+.mini div{display:flex;align-items:center;justify-content:space-between;font-size:10px;line-height:2;color:#ece4d7}
+.mini b{font-size:17px;color:#efc977}
+
+/* Live parchment fully covers the baked parchment underneath. */
+.scroll{
+ position:absolute;z-index:28;left:50%;top:calc(env(safe-area-inset-top) + 74px);
+ width:112px;height:408px;transform:translateX(-50%);
+ filter:drop-shadow(0 15px 28px #000c);
+}
+.scroll>i{
+ position:absolute;z-index:2;left:-3px;right:-3px;height:15px;border-radius:9px;
+ background:linear-gradient(#74502d,#322116);
+}
+.scroll>i:first-child{top:0}.scroll>i:last-child{bottom:0}
+.paper{
+ position:absolute;inset:8px 4px;
+ background:linear-gradient(90deg,#ac824c,#ecd9aa 17%,#e3c995 82%,#a87d49);
+ color:#2b2016;padding:21px 12px 10px;
+ border-left:1px solid #8a6236;border-right:1px solid #8a6236;
+}
+.paper>b{display:block;text-align:center;font:900 11px serif;margin-bottom:11px}
+#history{display:flex;flex-direction:column;align-items:center;gap:6px}
+.dot{width:17px;height:17px;border-radius:50%;border:1.5px solid #2d2119;box-shadow:inset 0 1px 2px #fff9,0 1px 2px #0004}
+.dot.g{background:#48b763}.dot.r{background:#dc4a3e}
+
+/* Invisible but large gate hit zones exactly over the beautiful baked gates. */
+.hit{
+ position:absolute;z-index:22;top:38%;height:31%;width:42%;
+ border:0;background:transparent;
+}
+.hit.green{left:0}.hit.red{right:0}
+.hit.ok{animation:gateGlow .62s ease}
+.hit.ng{animation:gateShake .42s ease}
+@keyframes gateGlow{
+ 35%{box-shadow:inset 0 0 95px rgba(255,255,255,.28),0 0 65px rgba(255,210,110,.25)}
+}
+@keyframes gateShake{
+ 25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}
+}
+
+/* This is the only bottom HUD in gameplay. No statistics section below it. */
+.caption{
+ position:absolute;z-index:27;left:50%;bottom:calc(env(safe-area-inset-bottom) + 20px);
+ transform:translateX(-50%);
+ width:min(73%,420px);text-align:center;padding:11px 14px;
+ border:1px solid rgba(225,181,91,.70);border-radius:13px;
+ background:rgba(4,6,8,.96);box-shadow:0 10px 32px #0008;
+ font:700 16px serif;
+}
+.caption small{display:block;font:11px sans-serif;margin-top:4px;color:#ddd5c8}
+.caption mark{background:none;color:#4bc36f}.caption mark.r{color:#f15b4f}
+
+.toast{
+ position:absolute;z-index:50;left:50%;top:59%;transform:translate(-50%,-50%) scale(.9);
+ opacity:0;transition:.20s;min-width:235px;padding:16px 22px;
+ background:#050709f5;border:1px solid #e0b96a;border-radius:15px;text-align:center;
+ box-shadow:0 22px 55px #000b;
+}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.toast b{display:block;font:800 25px Georgia,serif;color:#f0c978}
+.toast span{display:block;font-size:10px;margin-top:5px}
+.flash{position:absolute;z-index:45;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle,#fff4c6b0,transparent 58%)}
+.flash.on{animation:flash .85s}@keyframes flash{40%{opacity:1}100%{opacity:0}}
+
+/* Stats are a totally separate view. */
+.statsView{overflow:auto;-webkit-overflow-scrolling:touch;background:linear-gradient(#081016,#040609);padding-bottom:30px}
+.statsHead{position:sticky;top:0;z-index:5;padding:calc(env(safe-area-inset-top) + 11px) 13px 11px;display:flex;align-items:center;gap:14px;background:#070b0fee;border-bottom:1px solid #d5aa5a55}
+.statsHead h2{font-size:16px;margin:0}.statsHead button{padding:8px 11px;border-radius:9px;border:1px solid #ffffff2b;background:#161c22}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px}
+.summary div,.card{background:#0d151b;border:1px solid #d7aa5b44;border-radius:13px}
+.summary div{text-align:center;padding:12px 3px}.summary b{display:block;color:#f0c777;font-size:22px}.summary small{font-size:8px;color:#9da5ab}
+.card{margin:14px 12px;padding:11px;overflow:hidden}.card h3{font-size:13px;margin:0 0 8px}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th,td{padding:8px 4px;border-bottom:1px solid #ffffff12;text-align:right}
+th{font-size:8px;color:#d9d3c8;background:#162028}
+th:first-child,td:first-child{text-align:center}
+td:nth-child(2){color:#efc978}
+.bar{height:5px;background:#263038;border-radius:8px;overflow:hidden;margin-top:3px}
+.fill{height:100%;background:linear-gradient(90deg,#27764a,#54bd79)}
+.stageRow{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid #ffffff12;font-size:9px;color:#aeb4ba}
+.stageRow b{color:#eee8dc;font-size:10px}
+.reset{width:100%;padding:11px;border-radius:10px;border:1px solid #c9594e88;background:#281315;color:#ffc1ba;font-weight:800}
+
+@media(max-height:720px){
+ .scroll{height:345px;width:100px}
+ .dot{width:14px;height:14px}
+ .caption{bottom:calc(env(safe-area-inset-bottom) + 10px)}
+}
+
+body.transitioning .panel,
+body.transitioning .scroll,
+body.transitioning header,
+body.transitioning .caption{opacity:.28;transition:opacity .35s ease}
+.panel,.scroll,header,.caption{transition:opacity .35s ease}
+body.transitioning .bg{filter:brightness(.82) saturate(.92)}
+
+/* v7: remove accidental blurred block appearance */
+.panel, .scroll, .caption, nav button {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
